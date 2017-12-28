@@ -111,20 +111,24 @@ if __name__ == "__main__":
     label = np.array([0, 1, 1, 1])
     label = np_utils.to_categorical(label)
 
-    with tf.device("/cpu:0"):
-        model = Sequential()
+    units_array = [5, 10]
 
-        model.add(Dense(units=5, activation='relu', kernel_initializer=he_normal(), input_shape=(2,), name="dense1"))
-        model.add(Dense(units=2, activation='softmax', name="dense2"))
+    for units in units_array:
+        with tf.device("/cpu:0"):
+            model = Sequential()
 
-    parallel_model = multi_gpu_model(model, 4)
+            model.add(
+                Dense(units=units, activation='relu', kernel_initializer=he_normal(), input_shape=(2,), name="dense1"))
+            model.add(Dense(units=2, activation='softmax', name="dense2"))
 
-    parallel_model.compile(loss=keras.losses.categorical_crossentropy,
-                           optimizer=keras.optimizers.Adam(lr=1e-5),
-                           metrics=['accuracy'])
+        parallel_model = multi_gpu_model(model, 4)
 
-    parallel_model.fit(data, label,
-                       verbose=2,
-                       batch_size=10,
-                       epochs=10,
-                       shuffle=True)
+        parallel_model.compile(loss=keras.losses.categorical_crossentropy,
+                               optimizer=keras.optimizers.Adam(lr=1e-5),
+                               metrics=['accuracy'])
+
+        parallel_model.fit(data, label,
+                           verbose=2,
+                           batch_size=10,
+                           epochs=10,
+                           shuffle=True)
