@@ -131,4 +131,5 @@ if __name__ == "__main__":
                            verbose=2,
                            batch_size=10,
                            epochs=10,
+                           validation_data=(data, label),
                            shuffle=True)
